@@ -27,3 +27,16 @@ export const getPoll  = async()=>{
         
     }
 }
+
+export const updatePolls = async(pollId , pollDetails)=>{
+    try {
+        console.log(pollId , pollDetails ,  "it is the poll Details")
+        const response = await adminApi.post("/updatePolls" , {pollId,pollDetails})
+        console.log(response , "response")
+        return response.data.formattedPolls
+        
+    } catch (error) {
+        console.log(error)
+        throw error
+    }
+}

@@ -1,9 +1,8 @@
-
-import React from "react";
+import React, { useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { X } from "lucide-react";
-import { createPoll } from "../../Features/api/pollApi";
+import { updatePolls } from "../../Features/api/pollApi";
 import {
   TextField,
   Button,
@@ -17,19 +16,38 @@ import {
   InputLabel,
   FormControl,
 } from "@mui/material";
-import { Delete, Add, Poll } from "@mui/icons-material";
+import { Delete, Add } from "@mui/icons-material";
 import { toast } from "sonner";
 
-export function CreatePollForm({setNewPoll}) {
+export function EditPollForm({ poll, setEditingPoll , setPolls , type}) {
+
+    useEffect(()=>{
+        console.log(poll , "polls recied at edit Form")
+
+    },[poll])
+    
+function filterPollsByType(polls, type) {
+    switch (type) {
+      case "active":
+        return polls.filter((p) => p.isActive);
+      case "expired":
+        return polls.filter((p) => !p.isActive);
+      default:
+        return polls;
+    }
+  }
+
+
+ 
   const formik = useFormik({
     initialValues: {
-      pollTitle: "",
-      description: "",
-      duration: "60",
-      isPrivate: false,
-      options: ["", ""],
+      pollTitle: poll?.title || "",
+      description: poll?.description || "",
+      duration: poll?.duration?.toString() || "60",
+      isPrivate: poll?.isPrivate || false,
+      options: poll?.options?.map(opt => opt.text) || ["", ""], 
+      usersList: poll?.allowedUsers || [],
       users: "",
-      usersList: [],
     },
     validationSchema: Yup.object({
       pollTitle: Yup.string().trim().required("Poll title is required"),
@@ -43,7 +61,7 @@ export function CreatePollForm({setNewPoll}) {
     }),
     onSubmit: async (values, { setSubmitting }) => {
       setSubmitting(true);
-      const pollData = {
+      const updatedPoll = {
         title: values.pollTitle,
         description: values.description,
         duration: values.duration,
@@ -51,28 +69,24 @@ export function CreatePollForm({setNewPoll}) {
         options: values.options.map((opt) => opt.trim()),
         allowedUsers: values.isPrivate ? values.usersList : [],
       };
-      console.log("Poll Data:", pollData);
 
       try {
-        const poll = await createPoll(pollData)
-        console.log(poll ,  "polling")
-        if(poll){
-          toast.success("poll created SuccessFully")
+        const response = await updatePolls(poll.id, updatedPoll);
+        console.log(response , "response")
+        if (response) {
+          toast.success("Poll updated successfully");
+
+          const filtered = filterPollsByType(response, type);
+
+        setPolls(filtered)
+          setEditingPoll(null); 
         }
-        
-        
       } catch (error) {
-        console.log(error)
-         
-      }finally {
-       
-        setNewPoll(false)
-        
-
+        console.log(error);
+        toast.error("Failed to update poll");
+      } finally {
+        setSubmitting(false);
       }
-
-      setSubmitting(false);
-
     },
   });
 
@@ -101,7 +115,10 @@ export function CreatePollForm({setNewPoll}) {
   };
 
   return (
-    <form onSubmit={formik.handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+    <form
+      onSubmit={formik.handleSubmit}
+      style={{ display: "flex", flexDirection: "column", gap: "16px" }}
+    >
       <div className="flex justify-evenly">
         <div className="flex flex-col gap-12">
           <TextField
@@ -136,7 +153,9 @@ export function CreatePollForm({setNewPoll}) {
             control={
               <Switch
                 checked={formik.values.isPrivate}
-                onChange={() => formik.setFieldValue("isPrivate", !formik.values.isPrivate)}
+                onChange={() =>
+                  formik.setFieldValue("isPrivate", !formik.values.isPrivate)
+                }
               />
             }
             label="Make this poll private"
@@ -155,7 +174,10 @@ export function CreatePollForm({setNewPoll}) {
               />
               <div className="flex-col gap-6 h-full">
                 {formik.values.usersList.map((user, index) => (
-                  <div key={index} className="flex items-center bg-gray-100 p-2 rounded-lg shadow-md w-full">
+                  <div
+                    key={index}
+                    className="flex items-center bg-gray-100 p-2 rounded-lg shadow-md w-full"
+                  >
                     <p className="text-lg text-black font-sans">{user}</p>
                     <IconButton
                       size="small"
@@ -179,7 +201,15 @@ export function CreatePollForm({setNewPoll}) {
         <div>
           <h3>Poll Options</h3>
           {formik.values.options.map((option, index) => (
-            <div key={index} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+            <div
+              key={index}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                marginBottom: "8px",
+              }}
+            >
               <TextField
                 fullWidth
                 placeholder={`Option ${index + 1}`}
@@ -191,22 +221,40 @@ export function CreatePollForm({setNewPoll}) {
                 }}
                 required
               />
-              <IconButton onClick={() => removeOption(index)} disabled={formik.values.options.length <= 2}>
+              <IconButton
+                onClick={() => removeOption(index)}
+                disabled={formik.values.options.length <= 2}
+              >
                 <Delete />
               </IconButton>
             </div>
           ))}
-          <Button variant="outlined" startIcon={<Add />} onClick={addOption} disabled={formik.values.options.length >= 10}>
+          <Button
+            variant="outlined"
+            startIcon={<Add />}
+            onClick={addOption}
+            disabled={formik.values.options.length >= 10}
+          >
             Add Option
           </Button>
         </div>
       </div>
 
       <div className="flex justify-end gap-2">
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={() => setEditingPoll(null)}
+        >
+          Cancel
+        </Button>
         <Button variant="contained" type="submit" disabled={formik.isSubmitting}>
-          {formik.isSubmitting ? "Creating Poll..." : "Create Poll"}
+          {formik.isSubmitting ? "Updating Poll..." : "Update Poll"}
         </Button>
       </div>
     </form>
   );
 }
+
+
+  
