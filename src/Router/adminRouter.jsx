@@ -10,7 +10,9 @@ export default function AdminRouter(){
         <>
         <Routes>
             <Route path="/" element={<AdminDashBoard/>}></Route>
-            <Route element={<AdminProtectedRoute/>} />
+            <Route element={<AdminProtectedRoute/>} > 
+            
+            </Route>
         
 
         </Routes>

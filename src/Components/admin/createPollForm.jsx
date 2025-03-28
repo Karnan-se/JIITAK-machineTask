@@ -1,8 +1,9 @@
-"use client";
 
-import React, { useState } from "react";
+import React from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import { X } from "lucide-react";
-
+import { createPoll } from "../../Features/api/pollApi";
 import {
   TextField,
   Button,
@@ -16,72 +17,81 @@ import {
   InputLabel,
   FormControl,
 } from "@mui/material";
-import { Delete, Add } from "@mui/icons-material";
+import { Delete, Add, Poll } from "@mui/icons-material";
 
 export function CreatePollForm() {
-  // const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isPrivate, setIsPrivate] = useState(false);
-  const [options, setOptions] = useState([
-    { id: "1", text: "" },
-    { id: "2", text: "" },
-  ]);
-  const [pollTitle, setPollTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [duration, setDuration] = useState("60");
-  const [users, setUsers] = useState("");
-  const [usersList, setUsersList] = useState([]);
+  const formik = useFormik({
+    initialValues: {
+      pollTitle: "",
+      description: "",
+      duration: "60",
+      isPrivate: false,
+      options: ["", ""],
+      users: "",
+      usersList: [],
+    },
+    validationSchema: Yup.object({
+      pollTitle: Yup.string().trim().required("Poll title is required"),
+      description: Yup.string().trim(),
+      duration: Yup.string().required("Duration is required"),
+      options: Yup.array()
+        .of(Yup.string().trim().required("Option cannot be empty"))
+        .min(2, "At least two options are required")
+        .max(10, "A maximum of 10 options are allowed"),
+      usersList: Yup.array().of(Yup.string().email("Invalid email format")),
+    }),
+    onSubmit: async (values, { setSubmitting }) => {
+      setSubmitting(true);
+      const pollData = {
+        title: values.pollTitle,
+        description: values.description,
+        duration: values.duration,
+        isPrivate: values.isPrivate,
+        options: values.options.map((opt) => opt.trim()),
+        allowedUsers: values.isPrivate ? values.usersList : [],
+      };
+      console.log("Poll Data:", pollData);
+
+      try {
+        const poll = await createPoll(pollData)
+        console.log(poll ,  "polling")
+        
+        
+      } catch (error) {
+        
+      }
+
+      setSubmitting(false);
+
+    },
+  });
 
   const addOption = () => {
-    if (options.length >= 10) return;
-    setOptions([...options, { id: `${options.length + 1}`, text: "" }]);
+    if (formik.values.options.length >= 10) return;
+    formik.setFieldValue("options", [...formik.values.options, ""]);
   };
 
-  const removeOption = (id) => {
-    if (options.length <= 2) return;
-    setOptions(options.filter((option) => option.id !== id));
-  };
-
-  const updateOption = (id, text) => {
-    setOptions(
-      options.map((option) => (option.id === id ? { ...option, text } : option))
+  const removeOption = (index) => {
+    if (formik.values.options.length <= 2) return;
+    formik.setFieldValue(
+      "options",
+      formik.values.options.filter((_, i) => i !== index)
     );
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setIsSubmitting(true);
-
-    const pollData = {
-      title: pollTitle,
-      description,
-      duration,
-      isPrivate,
-      options: options.map((opt) => opt.text),
-      allowedUsers: isPrivate ? usersList : [],
-    };
-
-    console.log("Poll Data:", pollData);
-  };
-
   const handleKeyDown = (e) => {
-    if (e.key === "Enter" && users.trim() !== "") {
+    if (e.key === "Enter" && formik.values.users.trim() !== "") {
       e.preventDefault();
-      setUsersList((prevList) => [...prevList, users.trim()]);
-      setUsers(""); 
+      formik.setFieldValue("usersList", [
+        ...formik.values.usersList,
+        formik.values.users.trim(),
+      ]);
+      formik.setFieldValue("users", "");
     }
   };
 
-  const removeUser = (user)=>{
-    setUsersList(usersList.filter((users)=> users != user))
-    
-  }
-
   return (
-    <form
-      onSubmit={handleSubmit}
-      style={{ display: "flex", flexDirection: "column", gap: "16px" }}
-    >
+    <form onSubmit={formik.handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
       <div className="flex justify-evenly">
         <div className="flex flex-col gap-12">
           <TextField
@@ -89,8 +99,9 @@ export function CreatePollForm() {
             variant="outlined"
             fullWidth
             required
-            value={pollTitle}
-            onChange={(e) => setPollTitle(e.target.value)}
+            {...formik.getFieldProps("pollTitle")}
+            error={formik.touched.pollTitle && Boolean(formik.errors.pollTitle)}
+            helperText={formik.touched.pollTitle && formik.errors.pollTitle}
           />
 
           <TextField
@@ -99,16 +110,12 @@ export function CreatePollForm() {
             fullWidth
             multiline
             rows={3}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            {...formik.getFieldProps("description")}
           />
 
           <FormControl fullWidth>
             <InputLabel>Poll Duration</InputLabel>
-            <Select
-              value={duration}
-              onChange={(e) => setDuration(e.target.value)}
-            >
+            <Select {...formik.getFieldProps("duration")}>
               <MenuItem value="15">15 minutes</MenuItem>
               <MenuItem value="30">30 minutes</MenuItem>
               <MenuItem value="60">1 hour</MenuItem>
@@ -118,38 +125,39 @@ export function CreatePollForm() {
           <FormControlLabel
             control={
               <Switch
-                checked={isPrivate}
-                onChange={() => setIsPrivate(!isPrivate)}
+                checked={formik.values.isPrivate}
+                onChange={() => formik.setFieldValue("isPrivate", !formik.values.isPrivate)}
               />
             }
             label="Make this poll private"
           />
         </div>
 
-        {isPrivate && (
+        {formik.values.isPrivate && (
           <Card>
             <CardContent>
               <TextField
                 label="Add Users (by email)"
-                placeholder="Enter email addresses "
+                placeholder="Enter email addresses"
                 fullWidth
-                value={users}
+                {...formik.getFieldProps("users")}
                 onKeyDown={handleKeyDown}
-                onChange={(e) => setUsers(e.target.value)}
               />
-              <div className="flex-col gap-6 h-full ">
-                {usersList.map((user, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center bg-gray-100 p-2 rounded-lg shadow-md justify-items-end  w-full"
-                  >
+              <div className="flex-col gap-6 h-full">
+                {formik.values.usersList.map((user, index) => (
+                  <div key={index} className="flex items-center bg-gray-100 p-2 rounded-lg shadow-md w-full">
                     <p className="text-lg text-black font-sans">{user}</p>
                     <IconButton
                       size="small"
-                      onClick={() => removeUser(user)}
+                      onClick={() =>
+                        formik.setFieldValue(
+                          "usersList",
+                          formik.values.usersList.filter((_, i) => i !== index)
+                        )
+                      }
                       className="ml-2"
                     >
-                      <X className="h-4 w-full text-red-500   " />
+                      <X className="h-4 w-full text-red-500" />
                     </IconButton>
                   </div>
                 ))}
@@ -160,45 +168,33 @@ export function CreatePollForm() {
 
         <div>
           <h3>Poll Options</h3>
-          {options.map((option, index) => (
-            <div
-              key={option.id}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                marginBottom: "8px",
-              }}
-            >
+          {formik.values.options.map((option, index) => (
+            <div key={index} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
               <TextField
                 fullWidth
                 placeholder={`Option ${index + 1}`}
-                value={option.text}
-                onChange={(e) => updateOption(option.id, e.target.value)}
+                value={option}
+                onChange={(e) => {
+                  const newOptions = [...formik.values.options];
+                  newOptions[index] = e.target.value;
+                  formik.setFieldValue("options", newOptions);
+                }}
                 required
               />
-              <IconButton
-                onClick={() => removeOption(option.id)}
-                disabled={options.length <= 2}
-              >
+              <IconButton onClick={() => removeOption(index)} disabled={formik.values.options.length <= 2}>
                 <Delete />
               </IconButton>
             </div>
           ))}
-          <Button
-            variant="outlined"
-            startIcon={<Add />}
-            onClick={addOption}
-            disabled={options.length >= 10}
-          >
+          <Button variant="outlined" startIcon={<Add />} onClick={addOption} disabled={formik.values.options.length >= 10}>
             Add Option
           </Button>
         </div>
       </div>
 
-      <div  className="flex justify-end  gap-2">
-        <Button variant="contained" type="submit" >
-          {isSubmitting ? "Creating Poll..." : "Create Poll"}
+      <div className="flex justify-end gap-2">
+        <Button variant="contained" type="submit" disabled={formik.isSubmitting}>
+          {formik.isSubmitting ? "Creating Poll..." : "Create Poll"}
         </Button>
       </div>
     </form>

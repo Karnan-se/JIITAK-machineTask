@@ -28,6 +28,8 @@ const createAuthSlice =(sliceName)=>{
 const adminAuthSlice = createAuthSlice("adminInfo")
 const userAuthSlice = createAuthSlice("userInfo")
 
+export const {setCredentials:setAdminCredentials, logout:adminLogout} = adminAuthSlice.actions
+export const{setCredentials:setUserCredentials, logout:userLogout} =userAuthSlice.actions
 
 export const adminAuthReducer = adminAuthSlice.reducer;
 export const userAuthReducer = userAuthSlice.reducer

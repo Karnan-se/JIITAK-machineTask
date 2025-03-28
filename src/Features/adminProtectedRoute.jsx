@@ -9,5 +9,5 @@ export default function AdminProtectedRoute(){
 
     const userInfo = useSelector((state)=> state.user.userInfo)
 
-    return userInfo ? <Outlet context={{onlineUsers}} /> : <Navigate to="/admin/login" replace />;
+    return userInfo ? <Outlet/> : <Navigate to="/admin/login" replace />;
 }

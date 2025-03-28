@@ -8,5 +8,5 @@ export default function UserPrivateRoute(){
 
     
 
-    return userInfo ? <Outlet context={{onlineUsers}} /> : <Navigate to="/login" replace />;
+    return userInfo ? <Outlet/> : <Navigate to="/login" replace />;
 }
