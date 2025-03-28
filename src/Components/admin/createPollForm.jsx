@@ -18,20 +18,15 @@ import {
   FormControl,
 } from "@mui/material";
 import { Delete, Add, Poll } from "@mui/icons-material";
+import { toast } from "sonner";
 
-export function CreatePollForm() {
+export function CreatePollForm({setNewPoll ,    initialValues= { title: "",description: "", duration: "60", isPrivate: false, options: ["", ""], users: "", usersList: [],},}) {
+
   const formik = useFormik({
-    initialValues: {
-      pollTitle: "",
-      description: "",
-      duration: "60",
-      isPrivate: false,
-      options: ["", ""],
-      users: "",
-      usersList: [],
-    },
+    initialValues: initialValues,
+    
     validationSchema: Yup.object({
-      pollTitle: Yup.string().trim().required("Poll title is required"),
+      title: Yup.string().trim().required("Poll title is required"),
       description: Yup.string().trim(),
       duration: Yup.string().required("Duration is required"),
       options: Yup.array()
@@ -43,7 +38,7 @@ export function CreatePollForm() {
     onSubmit: async (values, { setSubmitting }) => {
       setSubmitting(true);
       const pollData = {
-        title: values.pollTitle,
+        title: values.title,
         description: values.description,
         duration: values.duration,
         isPrivate: values.isPrivate,
@@ -55,10 +50,19 @@ export function CreatePollForm() {
       try {
         const poll = await createPoll(pollData)
         console.log(poll ,  "polling")
+        if(poll){
+          toast.success("poll created SuccessFully")
+        }
         
         
       } catch (error) {
+        console.log(error)
+         
+      }finally {
+       
+        setNewPoll(false)
         
+
       }
 
       setSubmitting(false);
@@ -93,15 +97,15 @@ export function CreatePollForm() {
   return (
     <form onSubmit={formik.handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
       <div className="flex justify-evenly">
-        <div className="flex flex-col gap-12">
+        <div className="flex flex-col gap-12 ">
           <TextField
             label="Poll Title"
             variant="outlined"
             fullWidth
             required
-            {...formik.getFieldProps("pollTitle")}
-            error={formik.touched.pollTitle && Boolean(formik.errors.pollTitle)}
-            helperText={formik.touched.pollTitle && formik.errors.pollTitle}
+            {...formik.getFieldProps("title")}
+            error={formik.touched.title && Boolean(formik.errors.title)}
+            helperText={formik.touched.title && formik.errors.title}
           />
 
           <TextField

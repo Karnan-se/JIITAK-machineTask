@@ -1,5 +1,5 @@
 import axios from "axios";
-import { BASE_URL } from "../../Constants/constant";
+import { BASE_URL } from "../../Constants/constant.js";
 import { toast } from 'sonner'
 
 const createApiInstance = (baseURL) => {

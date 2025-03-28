@@ -28,9 +28,9 @@ export default function DashboardPage() {
             sx={{ minHeight: 40 }}
           >
             <Tab label="Active Polls" value="active" />
-            {/* <Tab label="Participated" value="participated" /> */}
+            
             <Tab label="Expired" value="expired" />
-            {/* <Tab label="Created by Me" value="created" /> */}
+           
           </Tabs>
 
           <CreatePollButton setNewPoll={setNewPoll} />
@@ -44,9 +44,12 @@ export default function DashboardPage() {
         </Box>
       </Box>
 
+
+      
+
       <Modal open={NewPoll} onClose={() => setNewPoll(false)}>
         <Box className="bg-white p-6 rounded-lg shadow-lg max-w-4xl w-full mx-auto mt-24">
-        <CreatePollForm/>
+        <CreatePollForm setNewPoll={setNewPoll}/>
         
 
           <Button
