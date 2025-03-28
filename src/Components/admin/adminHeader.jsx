@@ -2,7 +2,7 @@ import { Avatar, Button, Menu, MenuItem, Typography, IconButton } from "@mui/mat
 import { Logout, Settings, Person } from "@mui/icons-material";
 import { useState } from "react";
 
-export function AdminHeader({ userRole }) {
+export function AdminHeader() {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -21,9 +21,9 @@ export function AdminHeader({ userRole }) {
           Dashboard
         </Typography>
         <Typography variant="body2" color="textSecondary" className="mt-1">
-          {userRole === "admin"
-            ? "Manage your polls and view voting results"
-            : "View and participate in available polls"}
+        
+            "Manage your polls and view voting results"
+           
         </Typography>
       </div>
 
@@ -34,7 +34,7 @@ export function AdminHeader({ userRole }) {
               John Doe
             </Typography>
             <Typography variant="caption" color="textSecondary" className="capitalize">
-              {userRole}
+            
             </Typography>
           </div>
         </div>

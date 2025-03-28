@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { UserAuthForm } from './Components/user/userAuthForm'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import AdminDashBoard from './Pages/adminDashboard';
+import AdminRouter from './Router/adminRouter';
+import UserRouter from './Router/userRouter';
 
 function App() {
   
@@ -10,11 +11,8 @@ function App() {
     <>
     <Router>
       <Routes>
-        <Route path='/'  element={<UserAuthForm/>} />
-        <Route path='/admin' element={<AdminDashBoard/>} />
-
-        
-
+        <Route path='/'  element={<UserRouter/>} />
+        <Route path='/admin/*' element={<AdminRouter/>} />
       </Routes>
 
     </Router>
