@@ -1,4 +1,4 @@
-import { adminApi } from "./axiosInstance.js";
+import { adminApi, userApi } from "./axiosInstance.js";
 
 export const createPoll = async(pollDetail)=>{
    try {
@@ -17,7 +17,7 @@ export const createPoll = async(pollDetail)=>{
 export const getPoll  = async()=>{
     try {
         const response = await adminApi.get("/getPolls")
-        console.log(response.data.formattedPolls)
+        console.log(response.data.formattedPolls , "get Polls")
         
         return response.data.formattedPolls
         
@@ -40,3 +40,19 @@ export const updatePolls = async(pollId , pollDetails)=>{
         throw error
     }
 }
+
+export const updatevote = async(pollId , pollDetails)=>{ 
+   try {
+    console.log(pollId , pollDetails , "poll.id and poll details ")
+    const updatedVotes = await userApi.post("/updateVote" , {pollId , pollDetails})
+    console.log(updatedVotes.data.updatedVotes)
+    return updatedVotes.data.updatedVotes
+    
+   } catch (error) {
+    console.log(error)
+    throw error;
+    
+   }
+
+}
+

@@ -7,7 +7,8 @@ import {
   Typography,
   Button,
   LinearProgress,
-  Modal , Box
+  Modal,
+  Box,
 } from "@mui/material";
 import { Visibility, Edit } from "@mui/icons-material";
 import { getPoll } from "../../Features/api/pollApi";
@@ -19,13 +20,10 @@ export default function AdminPollList({ type }) {
   const [NewPoll, setNewPoll] = useState(false);
   const [editingPoll, setEditingPoll] = useState(null);
 
-  const handleEdit = (edit)=>{
-    console.log(polls)
-    setEditingPoll(edit)
-
-  }
-
-
+  const handleEdit = (edit) => {
+    console.log(polls);
+    setEditingPoll(edit);
+  };
 
   useEffect(() => {
     async function fetchPolls() {
@@ -71,7 +69,7 @@ export default function AdminPollList({ type }) {
                       {option.text} ({option.votes} votes)
                     </Typography>
 
-                    {votePercentage > 0 && ( 
+                    {votePercentage > 0 && (
                       <LinearProgress
                         variant="determinate"
                         value={votePercentage}
@@ -95,13 +93,12 @@ export default function AdminPollList({ type }) {
                 );
               })}
             </CardContent>
-            
 
             <CardActions>
               <Button
                 size="small"
                 startIcon={<Edit />}
-                onClick={()=>handleEdit(poll)}
+                onClick={() => handleEdit(poll)}
               >
                 Edit
               </Button>
@@ -109,10 +106,17 @@ export default function AdminPollList({ type }) {
           </Card>
         );
       })}
-        <Modal open={!!editingPoll} onClose={() => setEditingPoll(null)}>
+      <Modal open={!!editingPoll} onClose={() => setEditingPoll(null)}>
         <Box className="bg-white p-6 rounded-lg shadow-lg max-w-4xl w-full mx-auto mt-24">
-          {editingPoll && <EditPollForm poll={editingPoll} setEditingPoll={setEditingPoll} setPolls={setPolls}   type={type} />}
-          
+          {editingPoll && (
+            <EditPollForm
+              poll={editingPoll}
+              setEditingPoll={setEditingPoll}
+              setPolls={setPolls}
+              type={type}
+            />
+          )}
+
           <Button
             variant="contained"
             color="secondary"
@@ -126,7 +130,6 @@ export default function AdminPollList({ type }) {
     </div>
   );
 }
-
 
 function filterPollsByType(polls, type) {
   switch (type) {

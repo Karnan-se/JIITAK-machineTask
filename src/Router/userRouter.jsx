@@ -2,6 +2,7 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { UserAuthForm } from '../Components/user/userAuthForm';
 import UserPrivateRoute from '../Features/userProtectedRoute';
+import Home from '../Components/user/Home';
 
 export default function UserRouter(){
 
@@ -10,9 +11,9 @@ export default function UserRouter(){
     return (
         <>
         <Routes>
-            <Route path='/login/' element={<UserAuthForm/>}></Route>
+            <Route path='/login' element={<UserAuthForm/>}></Route>
             <Route element={<UserPrivateRoute />} >
-            <Route path='/' element={<h1>heklo</h1>}></Route>
+            <Route path='/' element={<Home/>}></Route>
             
             
                </Route>
