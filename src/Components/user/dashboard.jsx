@@ -5,6 +5,7 @@ import { Container, Box, Tab, Tabs, Typography, CircularProgress, Alert } from "
 import Header from "./header"
 import PollList from "./pollList"
 import { getPoll } from "../../Features/api/pollApi"
+import { fetchVote } from "../../Features/api/pollApi"
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props
@@ -25,10 +26,33 @@ function TabPanel(props) {
 export default function PollDashboard() {
   const [tabValue, setTabValue] = useState(1)
   const [polls, setPolls] = useState([])
+  const [votedPolls , setVotedPolls] = useState([])
   
 
   const user = useSelector((state) => state.user.userInfo)
-  console.log(user , "user")
+  
+  useEffect(()=>{
+    try {
+      const fetchVoteCall = async(userId)=>{
+        const votedpolls = await fetchVote(userId)
+        console.log(votedpolls , "voted Polls")
+        setVotedPolls(votedPolls)
+
+      }
+      fetchVoteCall(user._id)
+      
+    } catch (error) {
+      console.log(error)
+      
+    }
+  },[user])
+
+
+
+
+
+
+
 
   useEffect(() => {
     const fetchPolls = async () => {
@@ -59,16 +83,16 @@ export default function PollDashboard() {
  
 
   const activePolls = polls.filter((poll) => {
-    console.log(poll ,"poll.isActive in active filter");
-    return poll.isActive === true;
+    
+    return poll.isActive === true ;
   });
   
   const expiredPolls = polls.filter((poll) => {
-    console.log(poll.isActive, "poll.isActive in expired filter");
+    
     return poll.isActive === false;
   });
 
-  console.log(activePolls , expiredPolls ,  "active and expired")
+
 
   return (
     <>
@@ -83,8 +107,6 @@ export default function PollDashboard() {
               <Tab label={`Expired Polls (${expiredPolls.length})`} />
             </Tabs>
           </Box>
-
-          
             <>
               <TabPanel value={tabValue} index={0}>
                 {activePolls.length > 0 ? (

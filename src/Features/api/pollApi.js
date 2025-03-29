@@ -41,10 +41,10 @@ export const updatePolls = async(pollId , pollDetails)=>{
     }
 }
 
-export const updatevote = async(pollId , pollDetails)=>{ 
+export const updatevote = async(userInfo ,pollId , pollDetails)=>{ 
    try {
     console.log(pollId , pollDetails , "poll.id and poll details ")
-    const updatedVotes = await userApi.post("/updateVote" , {pollId , pollDetails})
+    const updatedVotes = await userApi.post("/updateVote" , { userInfo ,pollId , pollDetails})
     console.log(updatedVotes.data.updatedVotes)
     return updatedVotes.data.updatedVotes
     
@@ -54,5 +54,19 @@ export const updatevote = async(pollId , pollDetails)=>{
     
    }
 
+}
+
+
+export const fetchVote = async(userId)=>{
+    try {
+        const response = await userApi.get("/fetchVote",{params:{userId}})
+        console.log(response.data)
+        return response.data.VotedUser
+        
+    } catch (error) {
+        console.log(error)
+        throw error
+        
+    }
 }
 

@@ -21,12 +21,14 @@ import {
 } from "@mui/material"
 import AccessTimeIcon from "@mui/icons-material/AccessTime"
 import HowToVoteIcon from "@mui/icons-material/HowToVote"
+import {useSelector} from "react-redux"
 
 export default function PollItem({ poll, user, isActive }) {
   const [selectedOption, setSelectedOption] = useState("")
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
   const [voted, setVoted] = useState(false)
+  const userInfo = useSelector((state)=>state.user.userInfo)
 
 
   
@@ -50,7 +52,7 @@ export default function PollItem({ poll, user, isActive }) {
       )};
 
       console.log(updatedPoll , poll.id , "updatedPoll")
-      const updatePoll = await updatevote(poll.id ,selectedOption)
+      const updatePoll = await updatevote(userInfo._id ,poll.id ,selectedOption)
       console.log(updatePoll ,  "updateedPoll")
       toast.success("vote saved Successfully")
       
