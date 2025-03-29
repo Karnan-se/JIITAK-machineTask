@@ -1,17 +1,28 @@
 import { Avatar, Button, Menu, MenuItem, Typography, IconButton } from "@mui/material";
 import { Logout, Settings, Person } from "@mui/icons-material";
 import { useState } from "react";
+import {useSelector} from "react-redux"
+import {useDispatch} from  "react-redux"
+import { adminLogout } from "../../Features/slices/authSlice";
+import { userLogout } from "../../Features/slices/authSlice";
+import { adminLogoutApi } from "../../Features/api/logoutapi";
+
+
 
 export function AdminHeader() {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+  const dispatch = useDispatch()
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
+  const handleClose = async () => {
+    dispatch(adminLogout())
+    await adminLogoutApi()
+
+    
   };
 
   return (
@@ -30,9 +41,7 @@ export function AdminHeader() {
       <div className="flex items-center gap-4">
         <div className="hidden md:flex items-center gap-2">
           <div className="text-right">
-            <Typography variant="body2" fontWeight="medium">
-              John Doe
-            </Typography>
+            
             <Typography variant="caption" color="textSecondary" className="capitalize">
             
             </Typography>
@@ -52,17 +61,7 @@ export function AdminHeader() {
           anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
           transformOrigin={{ vertical: "top", horizontal: "right" }}
         >
-          <Typography variant="subtitle2" className="px-4 py-2">
-            My Account
-          </Typography>
-          <MenuItem onClick={handleClose}>
-            <Person fontSize="small" className="mr-2" />
-            Profile
-          </MenuItem>
-          <MenuItem onClick={handleClose}>
-            <Settings fontSize="small" className="mr-2" />
-            Settings
-          </MenuItem>
+         
           <MenuItem onClick={handleClose}>
             <Logout fontSize="small" className="mr-2" />
             Log out

@@ -34,6 +34,9 @@ export default function AdminPollList({ type }) {
     fetchPolls();
   }, []);
 
+
+
+
   if (polls.length === 0) {
     return <Typography align="center">No polls found.</Typography>;
   }

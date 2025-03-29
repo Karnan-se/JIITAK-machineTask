@@ -4,12 +4,16 @@ import AdminPollList from "./adminPollList";
 import { CreatePollButton } from "./createPollButton";
 import { Modal, Button } from "@mui/material";
 import { CreatePollForm } from "./createPollForm";
+import { useEffect } from "react";
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("active");
   const [NewPoll, setNewPoll] = useState(false);
 
+
+
   return (
+    
     <>
       <Box sx={{ maxWidth: 800, mx: "auto", py: 4 }}>
         <Box
@@ -44,12 +48,9 @@ export default function DashboardPage() {
         </Box>
       </Box>
 
-
-      
-
       <Modal open={NewPoll} onClose={() => setNewPoll(false)}>
         <Box className="bg-white p-6 rounded-lg shadow-lg max-w-4xl w-full mx-auto mt-24">
-        <CreatePollForm setNewPoll={setNewPoll}/>
+        <CreatePollForm setNewPoll={setNewPoll}  />
         
 
           <Button

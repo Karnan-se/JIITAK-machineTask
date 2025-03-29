@@ -55,6 +55,7 @@ export function CreatePollForm({setNewPoll}) {
 
       try {
         const poll = await createPoll(pollData)
+
         console.log(poll ,  "polling")
         if(poll){
           toast.success("poll created SuccessFully")
