@@ -1,4 +1,3 @@
-"use client"
 
 import { useState } from "react"
 import AppBar from "@mui/material/AppBar"
@@ -16,8 +15,10 @@ import Tooltip from "@mui/material/Tooltip"
 import Logout from "@mui/icons-material/Logout"
 import PersonIcon from "@mui/icons-material/Person"
 import { useDispatch } from "react-redux"
-// Import your logout action if you have one
-// import { logoutAdmin } from '../Features/slices/authSlice';
+import { setUserCredentials } from "../../Features/slices/authSlice"
+import { userLogout } from "../../Features/slices/authSlice"
+import { userLogoutApi } from "../../Features/api/logoutapi"
+
 
 export default function Header() {
   const [anchorEl, setAnchorEl] = useState(null)
@@ -32,11 +33,9 @@ export default function Header() {
     setAnchorEl(null)
   }
 
-  const handleLogout = () => {
-    // Implement your logout logic here
-    // For example: dispatch(logoutAdmin());
-    console.log("Logging out...")
-    // Close the menu
+  const handleLogout = async() => {
+    dispatch(userLogout());
+    await userLogoutApi()
     handleClose()
     // Redirect to login page or home page
     // navigate('/login');
