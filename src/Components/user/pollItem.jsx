@@ -45,11 +45,15 @@ export default function PollItem({ poll, user, isActive }) {
     try {
       setSubmitting(true)
       setError(null)
-      
 
-      const updatedPoll = { ...poll, options: poll.options.map(option => 
+    const participatedPolls = {...poll , options : poll.options.map((option)=> ({...option, votes: 0}))}
+    console.log(participatedPolls ,  "participated Polls here here here here here")
+
+      const updatedPoll = { ...participatedPolls, options: participatedPolls.options.map(option => 
         option.text === selectedOption ? { ...option, votes: option.votes + 1 } : option
       )};
+
+     
 
       console.log(updatedPoll , poll.id , "updatedPoll")
       const updatePoll = await updatevote(userInfo._id ,poll.id ,selectedOption)

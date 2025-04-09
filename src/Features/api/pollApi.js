@@ -60,7 +60,7 @@ export const updatevote = async(userInfo ,pollId , pollDetails)=>{
 export const fetchVote = async(userId)=>{
     try {
         const response = await userApi.get("/fetchVote",{params:{userId}})
-        console.log(response.data)
+        
         return response.data.VotedUser
         
     } catch (error) {

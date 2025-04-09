@@ -30,13 +30,16 @@ export default function PollDashboard() {
   
 
   const user = useSelector((state) => state.user.userInfo)
+  if(!user){
+    return null
+  }
   
   useEffect(()=>{
     try {
       const fetchVoteCall = async(userId)=>{
         const votedpolls = await fetchVote(userId)
         console.log(votedpolls , "voted Polls")
-        setVotedPolls(votedPolls)
+        setVotedPolls(votedpolls)
 
       }
       fetchVoteCall(user._id)
@@ -45,12 +48,7 @@ export default function PollDashboard() {
       console.log(error)
       
     }
-  },[user])
-
-
-
-
-
+  },[])
 
 
 
@@ -84,19 +82,25 @@ export default function PollDashboard() {
 
   const activePolls = polls.filter((poll) => {
     
-    return poll.isActive === true ;
-  });
+    return poll.isActive === true && !votedPolls.some((voted)=> voted.pollId == poll.id);
+  }).reverse()
+  console.log(activePolls ,votedPolls , "vottedPolls djjdj")
+
+
+  const participatedPolls = polls.filter((polls)=> votedPolls.some((voted)=> voted.pollId == polls.id)).reverse()
   
   const expiredPolls = polls.filter((poll) => {
     
     return poll.isActive === false;
-  });
+  }).reverse()
+
+  console.log(participatedPolls , "participatedPolls")
 
 
 
   return (
     <>
-    {polls && activePolls && expiredPolls &&  (  
+    
         <> 
       <Header />
       <Container maxWidth="lg">
@@ -105,6 +109,7 @@ export default function PollDashboard() {
             <Tabs value={tabValue} onChange={handleTabChange} aria-label="poll tabs" centered>
               <Tab label={`Active Polls (${activePolls.length})`} />
               <Tab label={`Expired Polls (${expiredPolls.length})`} />
+              <Tab label={`particpated polls (${participatedPolls.length})`} />
             </Tabs>
           </Box>
             <>
@@ -118,8 +123,17 @@ export default function PollDashboard() {
                 )}
               </TabPanel>
               <TabPanel value={tabValue} index={1}>
-                {expiredPolls.length > 0 ? (
+                {participatedPolls.length > 0 ? (
                   <PollList polls={expiredPolls} user={user} isActive={false} />
+                ) : (
+                  <Typography variant="body1" sx={{ textAlign: "center", p: 4 }}>
+                    No expired polls available.
+                  </Typography>
+                )}
+              </TabPanel>
+              <TabPanel value={tabValue} index={2}>
+                {expiredPolls.length > 0 ? (
+                  <PollList polls={participatedPolls} user={user} isActive={false} />
                 ) : (
                   <Typography variant="body1" sx={{ textAlign: "center", p: 4 }}>
                     No expired polls available.
@@ -131,7 +145,7 @@ export default function PollDashboard() {
         </Box>
       </Container>
       </>
-      )}
+    
     </>
   )
 }

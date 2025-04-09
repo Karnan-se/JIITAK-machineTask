@@ -22,11 +22,21 @@ const createApiInstance = (baseURL) => {
     (response) => response,
     (error) => {
       
-      // toast("befbh")
+      console.log(error)
       if (error.response && error.response.status === 403) {
         console.error("Access Denied: 403 Forbidden");
-        toast()
-       
+     
+       if(error.response.data.user.length == 1 && error.response.data.user[0] == "Admin"){
+        localStorage.removeItem("adminInfo")
+        toast.error(`${error.response.data.user} Session Expired`)
+        window.location.href = "/admin/login";
+       }else{
+        localStorage.removeItem("adminInfo")
+        localStorage.removeItem("userInfo")
+        toast.error(`${error.response.data.user[0]} Session Expired`)
+        window.location.href = "/login"
+
+       }
       }
       return Promise.reject(error);
     }
