@@ -15,9 +15,9 @@ import { getPoll } from "../../Features/api/pollApi";
 
 import { EditPollForm } from "./editPollForm";
 
-export default function AdminPollList({ type }) {
+export default function AdminPollList({ type , NewPoll  }) {
   const [polls, setPolls] = useState([]);
-  const [NewPoll, setNewPoll] = useState(false);
+  // const [NewPoll, setNewPoll] = useState(false);
   const [editingPoll, setEditingPoll] = useState(null);
 
   const handleEdit = (edit) => {
@@ -33,6 +33,19 @@ export default function AdminPollList({ type }) {
     }
     fetchPolls();
   }, []);
+
+  
+  useEffect(() => {
+    async function fetchPolls() {
+      const fetchedPolls = await getPoll();
+      const filteredPolls = filterPollsByType(fetchedPolls, type);
+      setPolls(filteredPolls);
+    }
+    fetchPolls();
+  }, [NewPoll]);
+
+
+
 
 
 

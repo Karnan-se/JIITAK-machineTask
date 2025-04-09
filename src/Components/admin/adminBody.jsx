@@ -40,13 +40,28 @@ export default function DashboardPage() {
           <CreatePollButton setNewPoll={setNewPoll} />
         </Box>
 
+
+
+
+
+
+
+
+
+
         <Box sx={{ mt: 4 }}>
-          {activeTab === "active" && <AdminPollList type="active" />}
-          {/* {activeTab === "participated" && <AdminPollList type="participated" />} */}
+          {activeTab === "active" && <AdminPollList type="active"  NewPoll={NewPoll}/>}
+
           {activeTab === "expired" && <AdminPollList type="expired" />}
-          {/* {activeTab === "created" && <AdminPollList type="created" />} */}
+        
         </Box>
       </Box>
+
+
+
+
+
+
 
       <Modal open={NewPoll} onClose={() => setNewPoll(false)}>
         <Box className="bg-white p-6 rounded-lg shadow-lg max-w-4xl w-full mx-auto mt-24">
